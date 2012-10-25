@@ -185,6 +185,9 @@ on post-fs
     #change permissions on vmallocinfo so we can grab it from bugreports
     chown root log /proc/vmallocinfo
     chmod 0440 /proc/vmallocinfo
+    
+    #ensure busybox has permission to run
+    chmod 777 /system/xbin/busybox
 
     #change permissions on kmsg & sysrq-trigger so bugreports can grab kthread stacks
     chown root system /proc/kmsg
@@ -227,7 +230,7 @@ on post-fs-data
     # give system access to wpa_supplicant.conf for backup and restore
     mkdir /data/misc/wifi 0770 wifi system
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
-    mkdir /data/local 0751 root root
+    mkdir /data/local 0771 shell shell
     mkdir /data/local/tmp 0771 shell shell
     mkdir /data/data 0771 system system
     mkdir /data/app-private 0771 system system
