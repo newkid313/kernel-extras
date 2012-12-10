@@ -163,9 +163,6 @@ on post-fs
     #change permissions on vmallocinfo so we can grab it from bugreports
     chown root log /proc/vmallocinfo
     chmod 0440 /proc/vmallocinfo
-    
-    #ensure busybox has permission to run
-    chmod 777 /system/xbin/busybox
 
     #change permissions on kmsg & sysrq-trigger so bugreports can grab kthread stacks
     chown root system /proc/kmsg
@@ -802,6 +799,10 @@ service installd /system/bin/installd
     class main
     socket installd stream 600 system system
 
+service flash_recovery /system/etc/install-recovery.sh
+    class main
+    oneshot
+
 service racoon /system/bin/racoon
     class main
     socket racoon stream 600 system system
@@ -950,7 +951,3 @@ on property:sys.qseecomd.enable=true
 on property:ro.yas.enable=true
 	start orientationd
 	start geomagneticd
-
-#Set permissions for su once again for good measure
-	chmod 0775 /xbin/su
-

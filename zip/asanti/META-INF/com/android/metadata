@@ -1,0 +1,3 @@
+post-build=motorola/cm_asanti/asanti:4.1.2/JZO54K/eng.john.20121126.132417:userdebug/test-keys
+post-timestamp=1353961504
+pre-device=asanti

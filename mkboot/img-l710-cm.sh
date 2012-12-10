@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export	PWD=`readlink -f .`
+export	pwd=`readlink -f .`
 echo "making ramdisk"
 ./mkbootfs ramdisk-l710-cm | gzip > ramdisk.gz
 

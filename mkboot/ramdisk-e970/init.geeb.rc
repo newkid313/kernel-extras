@@ -1,0 +1,83 @@
+import /init.gee.rc
+import /init.lge.rc
+
+on init
+    # Set permissions for persist partition
+    mkdir /persist 0771 system system
+
+on boot-pause
+    exec system/bin/battery_charging
+    
+# FEATURE_SDCARD_ENCRYPTION dongjune.kim@lge.com
+on post-fs-data
+    setprop ro.crypto.keyfile.userdata /dev/block/platform/msm_sdcc.1/by-name/encrypt 
+
+
+# [LGE_S][IPSecVPN] 2012-04-14, seho.kim@lge.com : Authentec IPSecVPN Kernel Module install
+on boot
+    insmod /system/lib/modules/vpnclient.ko
+# [LGE_E][IPSecVPN] 2012-04-14, seho.kim@lge.com : Authentec IPSecVPN Kernel Module install
+    chmod 0660 /dev/ttyGS0
+    chown system system /dev/ttyGS0
+    
+# LGE_CHANGE_S, 20120605, hojin.ryu@lge.com,Set the status of backlight brightness when boot
+#brightness properties 
+	setprop ro.lge.lcd_default_brightness 202 
+	setprop ro.lge.lcd_auto_brightness_mode false
+# LGE_CHANGE_E, 20120605, hojin.ryu@lge.com,Set the status of backlight brightness when boot
+
+# LGE_CHANGE_S, 20120508, minseok.hwangbo@lge.com, Re-define TCP buffer size for ATT ALL network. Overwrite init.rc property
+    setprop net.tcp.buffersize.default 8096,87380,3461120,4096,16384,3461120
+    setprop net.tcp.buffersize.lte     8096,140625,3461120,4096,87380,3461120
+    setprop net.tcp.buffersize.umts    8096,140625,3461120,4096,87380,3461120
+    setprop net.tcp.buffersize.hspa    8096,140625,3461120,4096,87380,3461120
+    setprop net.tcp.buffersize.hsupa   8096,140625,3461120,4096,87380,3461120
+    setprop net.tcp.buffersize.hsdpa   8096,140625,3461120,4096,87380,3461120
+    setprop net.tcp.buffersize.edge    8096,87380,3461120,4096,16384,3461120
+    setprop net.tcp.buffersize.gprs    8096,87380,3461120,4096,16384,3461120
+    setprop net.tcp.buffersize.evdo_b  8096,87380,3461120,4096,16384,3461120
+# LGE_CHANGE_E, 20120508, minseok.hwangbo@lge.com, Re-define TCP buffer size for ATT ALL network
+
+# LGE_CHANGE_S, 20120611, eunsang.kim@lge.com, To support SD card
+# The support of external sd
+    mkdir /data/media/external_sd 0000 system system
+# LGE_UPDATE_E, 20120611, eunsang.kim@lge.com
+
+# LGE_CHANGE_S, 20120611, eunsang.kim@lge.com, To support SDXC exFAT Filesystem. install Linux Driver Module
+    insmod /system/lib/modules/texfat.ko
+# LGE_CHANGE_E, 20120611, eunsang.kim@lge.com
+
+# NFC Feature
+   chmod 0600 /dev/pn544
+   setprop ro.nfc.port I2C
+   chown nfc nfc /dev/pn544
+# [LGE_S][IPSecVPN] 2012-04-14, seho.kim@lge.com : Authentec IPSecVPN Service & IPSecVpn modules permission change
+service vpnclientpm /system/bin/vpnclientpm -O /data/data/com.ipsec.vpnclient/vpnclientpm.txt
+  class main
+# uid dropped to system when capabilities are set
+  group system net_admin net_raw
+  disabled
+
+service vpncstarter /system/bin/vpncstarter
+  class main
+  user system
+  group system net_admin net_raw
+# [LGE_E][IPSecVPN] 2012-04-14, seho.kim@lge.com : Authentec IPSecVPN Service & IPSecVpn modules permission change
+
+# LGE_CHANGE_S, 20111118, smorke@lge.com, SMPL counter
+service smpl_count /system/bin/smpl_count
+    oneshot
+# LGE_CHANGE_E, 20111118, smorke@lge.com
+
+# LGE_CHANGE_S, [LGE_MODEL][CAPP_POSTINSTALL_MODIFIED], haksu.kim@lge.com, 2012-04-09
+service postinstaller /system/vendor/bin/postinstaller.sh
+    disabled
+    oneshot
+
+on property:vold.post_fs_data_done=1
+    start postinstaller
+# LGE_CHANGE_E, [LGE_MODEL][CAPP_POSTINSTALL_MODIFIED], haksu.kim@lge.com, 2012-04-09
+# LGE_CHANGE_S, 20120810 bonkang.koo@lge.com, factory reset magic code
+on property:sys.factory=1
+    exec /system/bin/dd if=/system/etc/factory_reset_magic of=/dev/block/platform/msm_sdcc.1/by-name/reserved bs=512 count=1
+# LGE_CHANGE_E, 20120810 bonkang.koo@lge.com, factory reset magic code
