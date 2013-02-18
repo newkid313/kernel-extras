@@ -82,12 +82,6 @@ if $TEST -d /system/etc/init.d; then
 fi
 sync
 
-# Fix screwy ownerships
-for blip in default.prop fota.rc init init.rc lib lpm.rc recovery.rc sbin; do
-  $CHOWN root.shell /$blip
-  $TEST -d $blip && $CHOWN root.shell /$blip/*
-done
-
 $CHOWN root.shell /lib/modules/*
 
 #setup proper passwd and group files for 3rd party root access

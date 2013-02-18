@@ -30,7 +30,7 @@ on emmc-fs
     mkdir /firmware_dsps 0771 system system
 
     #mount all the things
-    mount_all fstab.jet
+    mount_all asanti.jet
 
     # use qcom link scripts for firmware links
     exec /system/bin/sh /system/etc/init.qcom.q6_links.sh
@@ -91,7 +91,7 @@ on boot
     # for modem link
     chown system system /sys/module/serial/parameters/modem_enabled
     chown system system /dev/ttyHSUSB0
-    chown system system /dev/ttySA0
+    chown system system /dev/ttyHS1
     chown system system /dev/smd9
 
     # wifi
